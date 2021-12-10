@@ -51,15 +51,35 @@ Prob_fit = stats.chi2.sf(Chi2_value, Ndof_fit)
 print("this is the p-value of Chi2", Prob_fit)
 #Lets proceed to the trigonometry method
 
-theta_trig = np.arctan(0.27033)
-print(" This is the angle from the trigonometric method", theta_trig) 
+theta_trig = np.arctan(0.27033) 
 # Now the error from the error propagation formula 
 S = 1/(1 + np.power(0.27033, 4))
 print(S)
 Err_theta_trig = np.sqrt(S*np.square(0.12)/(np.square(98.4)) + S* np.square(0.27033 * 0.1))
-print(" The error, from error propagation, on the trigonometry is: ", Err_theta_trig)
+print("The error, from error propagation, on the trigonometry is: ", Err_theta_trig)
 print("The result from the trigonometry process is : ", theta_trig, "+-", Err_theta_trig, "rad" )
 print("The result from the goniometer is : ", Weighted_Mean , "+-", sigma_Weighted_Mean, "rad")
 
+#Now we will find the Delta_theta created from turning the setup, normal to reverse
+#First get the accelerations
+from numpy import load
+data1 = load('ExpTable/one_direction.npy')
+data2 = load('ExpTable/other_direction.npy')
+print(data1)
+a_norm = data1
+a_rev = data2
+print(data2)
+a_norm_ave = 1.5543
+a_norm_std = 0.0018
+a_rev_ave = 1.5970
+a_rev_std = 0.0018
+print("The average in the normal is", a_norm_ave, "+-", a_norm_std)
+print("The average in the reversed is", a_rev_ave, "+-", a_rev_std)   
+delta_theta_table = (a_norm_ave - a_rev_ave)*np.tan(theta_trig)/(a_norm_ave + a_rev_ave)
+print("As a result the deviation of the angle due to the table is:", delta_theta_table)
+Summ1 = np.square(a_norm_ave + a_rev_ave)
+Summ2 = np.square(a_norm_ave - a_rev_ave)                                                              
+sigma_delta_theta_average = np.sqrt((np.square(a_norm_std)+np.square(a_rev_std))/np.square(Summ1))+ np.square(Summ2)*np.square(Err_theta_trig)/(Summ1*(1+np.square(theta_trig)))
+print("After ages, the results for the deviation on the table is:",delta_theta_table,"+-", sigma_delta_theta_average)
 
 
